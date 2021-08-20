@@ -206,28 +206,6 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-form-item label="聊天室状态">
-            <el-radio-group v-model="websiteConfigForm.isChatRoom">
-              <el-radio :label="0">关闭</el-radio>
-              <el-radio :label="1">开启</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item
-            label="Websocket地址"
-            v-show="websiteConfigForm.isChatRoom == 1"
-          >
-            <el-input
-              v-model="websiteConfigForm.websocketUrl"
-              size="small"
-              style="width:400px"
-            />
-          </el-form-item>
-          <el-form-item label="音乐播放器状态">
-            <el-radio-group v-model="websiteConfigForm.isMusicPlayer">
-              <el-radio :label="0">关闭</el-radio>
-              <el-radio :label="1">开启</el-radio>
-            </el-radio-group>
-          </el-form-item>
           <el-button
             type="primary"
             size="medium"
@@ -266,9 +244,6 @@ export default {
         isReward: 1,
         weiXinQRCode: "",
         alipayQRCode: "",
-        isChatRoom: 1,
-        websocketUrl: "",
-        isMusicPlayer: 1,
         isEmailNotice: 1,
         isCommentReview: 0,
         isMessageReview: 0

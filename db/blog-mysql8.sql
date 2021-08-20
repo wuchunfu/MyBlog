@@ -443,7 +443,6 @@ INSERT INTO `tb_resource` VALUES (270, '更新用户信息', '/users/info', 'PUT
 INSERT INTO `tb_resource` VALUES (271, 'qq登录', '/users/oauth/qq', 'POST', 173, 1, '2021-08-11 21:04:22', '2021-08-11 21:07:06');
 INSERT INTO `tb_resource` VALUES (272, '微博登录', '/users/oauth/weibo', 'POST', 173, 1, '2021-08-11 21:04:22', '2021-08-11 21:07:06');
 INSERT INTO `tb_resource` VALUES (273, '修改密码', '/users/password', 'PUT', 173, 1, '2021-08-11 21:04:22', '2021-08-11 21:07:09');
-INSERT INTO `tb_resource` VALUES (274, '上传语音', '/voice', 'POST', 166, 1, '2021-08-11 21:04:22', '2021-08-11 21:05:33');
 
 -- ----------------------------
 -- Table structure for tb_role
@@ -860,6 +859,6 @@ CREATE TABLE `tb_website_config`  (
 -- ----------------------------
 -- Records of tb_website_config
 -- ----------------------------
-INSERT INTO `tb_website_config` VALUES (1, '{\"alipayQRCode\":\"https://www.static.talkxj.com/photos/13d83d77cc1f7e4e0437d7feaf56879f.png\",\"gitee\":\"https://gitee.com/feng_meiyu\",\"github\":\"https://github.com/X1192176811\",\"isChatRoom\":1,\"isCommentReview\":0,\"isEmailNotice\":1,\"isMessageReview\":0,\"isMusicPlayer\":1,\"isReward\":1,\"qq\":\"1192176811\",\"socialLoginList\":[\"qq\",\"weibo\"],\"socialUrlList\":[\"qq\",\"github\",\"gitee\"],\"touristAvatar\":\"https://www.static.talkxj.com/photos/0bca52afdb2b9998132355d716390c9f.png\",\"websiteAuthor\":\"作者\",\"websiteAvatar\":\"https://www.static.talkxj.com/config/43a07ac1ca201143f7b938d0791124fc.png\",\"websiteCreateTime\":\"2019-12-09T16:00:00\",\"websiteIntro\":\"网站简介\",\"websiteName\":\"个人博客\",\"websiteNotice\":\"请前往后台管理修改博客信息\",\"websiteRecordNo\":\"备案号\",\"websocketUrl\":\"ws://127.0.0.1:8080/websocket\",\"weiXinQRCode\":\"https://www.static.talkxj.com/photos/4f767ef84e55ab9ad42b2d20e51deca1.png\"}', '2021-08-09 19:37:30', '2021-08-12 15:58:23');
+INSERT INTO `tb_website_config` VALUES (1, '{\"alipayQRCode\":\"https://www.static.talkxj.com/photos/13d83d77cc1f7e4e0437d7feaf56879f.png\",\"gitee\":\"https://gitee.com/feng_meiyu\",\"github\":\"https://github.com/X1192176811\",\"isCommentReview\":0,\"isEmailNotice\":1,\"isMessageReview\":0,\"isReward\":1,\"qq\":\"1192176811\",\"socialLoginList\":[\"qq\",\"weibo\"],\"socialUrlList\":[\"qq\",\"github\",\"gitee\"],\"touristAvatar\":\"https://www.static.talkxj.com/photos/0bca52afdb2b9998132355d716390c9f.png\",\"websiteAuthor\":\"作者\",\"websiteAvatar\":\"https://www.static.talkxj.com/config/43a07ac1ca201143f7b938d0791124fc.png\",\"websiteCreateTime\":\"2019-12-09T16:00:00\",\"websiteIntro\":\"网站简介\",\"websiteName\":\"个人博客\",\"websiteNotice\":\"请前往后台管理修改博客信息\",\"websiteRecordNo\":\"备案号\",\"weiXinQRCode\":\"https://www.static.talkxj.com/photos/4f767ef84e55ab9ad42b2d20e51deca1.png\"}', '2021-08-09 19:37:30', '2021-08-12 15:58:23');
 
 SET FOREIGN_KEY_CHECKS = 1;

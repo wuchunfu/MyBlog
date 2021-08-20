@@ -136,22 +136,4 @@ public class WebsiteConfigVO {
     @ApiModelProperty(name = "alipayQRCode", value = "支付宝二维码", required = true, dataType = "String")
     private String alipayQRCode;
 
-    /**
-     * 是否开启聊天室
-     */
-    @ApiModelProperty(name = "isReward", value = "是否打赏", required = true, dataType = "Integer")
-    private Integer isChatRoom;
-
-    /**
-     * websocket地址
-     */
-    @ApiModelProperty(name = "websocketUrl", value = "websocket地址", required = true, dataType = "String")
-    private String websocketUrl;
-
-    /**
-     * 是否开启音乐
-     */
-    @ApiModelProperty(name = "isMusicPlayer", value = "是否开启音乐", required = true, dataType = "Integer")
-    private Integer isMusicPlayer;
-
 }

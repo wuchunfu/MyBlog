@@ -6,11 +6,9 @@ import com.minzheng.blog.dto.BlogBackInfoDTO;
 import com.minzheng.blog.dto.BlogHomeInfoDTO;
 import com.minzheng.blog.enums.FilePathEnum;
 import com.minzheng.blog.service.BlogInfoService;
-import com.minzheng.blog.service.impl.WebSocketServiceImpl;
 import com.minzheng.blog.strategy.context.UploadStrategyContext;
 import com.minzheng.blog.vo.BlogInfoVO;
 import com.minzheng.blog.vo.Result;
-import com.minzheng.blog.vo.VoiceVO;
 import com.minzheng.blog.vo.WebsiteConfigVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -36,8 +34,6 @@ import static com.minzheng.blog.constant.OptTypeConst.UPDATE;
 public class BlogInfoController {
     @Autowired
     private BlogInfoService blogInfoService;
-    @Autowired
-    private WebSocketServiceImpl webSocketService;
     @Autowired
     private UploadStrategyContext uploadStrategyContext;
 
@@ -122,19 +118,6 @@ public class BlogInfoController {
     @PutMapping("/admin/about")
     public Result<?> updateAbout(@Valid @RequestBody BlogInfoVO blogInfoVO) {
         blogInfoService.updateAbout(blogInfoVO);
-        return Result.ok();
-    }
-
-    /**
-     * 保存语音信息
-     *
-     * @param voiceVO 语音信息
-     * @return {@link Result<String>} 语音地址
-     */
-    @ApiOperation(value = "上传语音")
-    @PostMapping("/voice")
-    public Result<String> sendVoice(VoiceVO voiceVO) {
-        webSocketService.sendVoice(voiceVO);
         return Result.ok();
     }
 

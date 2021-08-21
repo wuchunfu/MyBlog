@@ -20,17 +20,6 @@ const routes = [
     }
   },
   {
-    path: "/albums",
-    component: resolve => require(["../views/album/Album.vue"], resolve),
-    meta: {
-      title: "相册"
-    }
-  },
-  {
-    path: "/albums/:albumId",
-    component: resolve => require(["../views/album/Photo.vue"], resolve)
-  },
-  {
     path: "/tags",
     component: resolve => require(["../views/tag/Tag.vue"], resolve),
     meta: {

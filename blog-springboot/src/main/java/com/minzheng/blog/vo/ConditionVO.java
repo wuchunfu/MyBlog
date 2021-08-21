@@ -54,12 +54,6 @@ public class ConditionVO {
     private Integer tagId;
 
     /**
-     * 相册id
-     */
-    @ApiModelProperty(name = "albumId", value = "相册id", dataType = "Integer")
-    private Integer albumId;
-
-    /**
      * 登录类型
      */
     @ApiModelProperty(name = "type", value = "登录类型", dataType = "Integer")

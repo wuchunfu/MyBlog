@@ -10,8 +10,8 @@ import org.springframework.web.client.RestTemplate;
 /**
  * 博客启动类
  *
- * @author yezhiqiu
- * @date 2021/08/14
+ * @author wuchunfu
+ * @date 2021-08-21
  */
 @MapperScan("com.itsharex.blog.dao")
 @SpringBootApplication

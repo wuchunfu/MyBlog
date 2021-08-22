@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.minzheng.blog.dao.UserAuthDao">
+<mapper namespace="com.itsharex.blog.dao.UserAuthDao">
 
-    <resultMap id="UserBackMap" type="com.minzheng.blog.dto.UserBackDTO">
+    <resultMap id="UserBackMap" type="com.itsharex.blog.dto.UserBackDTO">
         <id column="id" property="id"/>
         <result column="user_info_id" property="userInfoId"/>
         <result column="avatar" property="avatar"/>
@@ -13,7 +13,7 @@
         <result column="create_time" property="createTime"/>
         <result column="last_login_time" property="lastLoginTime"/>
         <result column="is_disable" property="isDisable"/>
-        <collection property="roleList" ofType="com.minzheng.blog.dto.UserRoleDTO">
+        <collection property="roleList" ofType="com.itsharex.blog.dto.UserRoleDTO">
             <id column="role_id" property="id"/>
             <id column="role_name" property="roleName"/>
         </collection>
@@ -41,17 +41,17 @@
         nickname,
         is_disable
         FROM
-          tb_user_info
+        tb_user_info
         <where>
             <if test="condition.loginType != null">
                 id in
                 (
                 SELECT
-                  user_info_id
+                user_info_id
                 FROM
-                  tb_user_auth
+                tb_user_auth
                 WHERE
-                  login_type =  #{condition.loginType}
+                login_type = #{condition.loginType}
                 )
             </if>
         </where>
@@ -61,7 +61,7 @@
             </if>
         </where>
         LIMIT #{current},#{size}
-        )   ui
+        ) ui
         LEFT JOIN tb_user_auth ua ON ua.user_info_id = ui.id
         LEFT JOIN tb_user_role ur ON ui.id = ur.user_id
         LEFT JOIN tb_role r ON ur.role_id = r.id
@@ -75,7 +75,7 @@
         LEFT JOIN tb_user_info ui ON ua.user_info_id = ui.id
         <where>
             <if test="condition.keywords != null">
-                 nickname like concat('%',#{condition.keywords},'%')
+                nickname like concat('%',#{condition.keywords},'%')
             </if>
             <if test="condition.loginType != null">
                 and login_type = #{condition.loginType}

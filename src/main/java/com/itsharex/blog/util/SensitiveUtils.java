@@ -25,7 +25,7 @@ public class SensitiveUtils {
     /**
      * 敏感词文件
      */
-    private static final String SENSITIVE_WORD = "sensitive-words.txt";
+    private static final String SENSITIVE_WORD = "src/main/resources/sensitive-words.txt";
 
     /**
      * 替换符

@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.itsharex</groupId>
-    <artifactId>blog-springboot</artifactId>
+    <artifactId>MyBlog</artifactId>
     <version>0.0.1</version>
     <name>MyBlog</name>
     <description>基于springboot + vue开发的前后端分离博客</description>

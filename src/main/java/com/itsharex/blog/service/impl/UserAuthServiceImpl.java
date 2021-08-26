@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itsharex.blog.constant.CommonConst;
 import com.itsharex.blog.constant.MQPrefixConst;
@@ -12,6 +13,7 @@ import com.itsharex.blog.dao.UserAuthDao;
 import com.itsharex.blog.dao.UserInfoDao;
 import com.itsharex.blog.dao.UserRoleDao;
 import com.itsharex.blog.dto.EmailDTO;
+import com.itsharex.blog.dto.UserAreaDTO;
 import com.itsharex.blog.dto.UserBackDTO;
 import com.itsharex.blog.dto.UserInfoDTO;
 import com.itsharex.blog.entity.UserAuth;
@@ -35,13 +37,23 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import static com.itsharex.blog.constant.CommonConst.CITY;
+import static com.itsharex.blog.constant.CommonConst.PROVINCE;
+import static com.itsharex.blog.constant.CommonConst.UNKNOWN;
+import static com.itsharex.blog.constant.RedisPrefixConst.USER_AREA;
+import static com.itsharex.blog.constant.RedisPrefixConst.VISITOR_AREA;
+import static com.itsharex.blog.enums.UserAreaTypeEnum.getUserAreaType;
 import static com.itsharex.blog.util.CommonUtils.checkEmail;
 import static com.itsharex.blog.util.CommonUtils.getRandomCode;
 
@@ -83,6 +95,35 @@ public class UserAuthServiceImpl extends ServiceImpl<UserAuthDao, UserAuth> impl
         rabbitTemplate.convertAndSend(MQPrefixConst.EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
         // 将验证码存入redis，设置过期时间为15分钟
         redisService.set(RedisPrefixConst.USER_CODE_KEY + username, code, RedisPrefixConst.CODE_EXPIRE_TIME);
+    }
+
+    @Override
+    public List<UserAreaDTO> listUserAreas(ConditionVO conditionVO) {
+        List<UserAreaDTO> userAreaDTOList = new ArrayList<>();
+        switch (Objects.requireNonNull(getUserAreaType(conditionVO.getType()))) {
+            case USER:
+                // 查询注册用户区域分布
+                Object userArea = redisService.get(USER_AREA);
+                if (Objects.nonNull(userArea)) {
+                    userAreaDTOList = JSON.parseObject(userArea.toString(), List.class);
+                }
+                return userAreaDTOList;
+            case VISITOR:
+                // 查询游客区域分布
+                Map<String, Object> visitorArea = redisService.hGetAll(VISITOR_AREA);
+                if (Objects.nonNull(visitorArea)) {
+                    userAreaDTOList = visitorArea.entrySet().stream()
+                            .map(item -> UserAreaDTO.builder()
+                                    .name(item.getKey())
+                                    .value(Long.valueOf(item.getValue().toString()))
+                                    .build())
+                            .collect(Collectors.toList());
+                }
+                return userAreaDTOList;
+            default:
+                break;
+        }
+        return userAreaDTOList;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -185,6 +226,33 @@ public class UserAuthServiceImpl extends ServiceImpl<UserAuthDao, UserAuth> impl
                 .select(UserAuth::getUsername)
                 .eq(UserAuth::getUsername, user.getUsername()));
         return Objects.nonNull(userAuth);
+    }
+
+    /**
+     * 统计用户地区
+     */
+    @Scheduled(cron = "0 0 * * * ?")
+    public void statisticalUserArea() {
+        // 统计用户地域分布
+        Map<String, Long> userAreaMap = userAuthDao.selectList(new LambdaQueryWrapper<UserAuth>().select(UserAuth::getIpSource))
+                .stream()
+                .map(item -> {
+                    if (StringUtils.isNotBlank(item.getIpSource())) {
+                        return item.getIpSource().substring(0, 2)
+                                .replaceAll(PROVINCE, "")
+                                .replaceAll(CITY, "");
+                    }
+                    return UNKNOWN;
+                })
+                .collect(Collectors.groupingBy(item -> item, Collectors.counting()));
+        // 转换格式
+        List<UserAreaDTO> userAreaList = userAreaMap.entrySet().stream()
+                .map(item -> UserAreaDTO.builder()
+                        .name(item.getKey())
+                        .value(item.getValue())
+                        .build())
+                .collect(Collectors.toList());
+        redisService.set(USER_AREA, JSON.toJSONString(userAreaList));
     }
 
 }

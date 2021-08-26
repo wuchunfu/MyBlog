@@ -122,5 +122,15 @@ public class BlogInfoController {
         return Result.ok();
     }
 
+    /**
+     * 上传访客信息
+     *
+     * @return {@link Result}
+     */
+    @PostMapping("/report")
+    public Result<?> report() {
+        blogInfoService.report();
+        return Result.ok();
+    }
 }
 

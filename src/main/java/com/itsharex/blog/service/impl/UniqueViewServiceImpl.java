@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static com.itsharex.blog.constant.RedisPrefixConst.VISITOR_AREA;
 import static com.itsharex.blog.enums.ZoneEnum.SHANGHAI;
 
 /**
@@ -57,9 +58,10 @@ public class UniqueViewServiceImpl extends ServiceImpl<UniqueViewDao, UniqueView
 
     @Scheduled(cron = " 0 1 0 * * ?")
     public void clear() {
-        //清空redis访客记录
+        // 清空redis访客记录
         redisService.del(RedisPrefixConst.UNIQUE_VISITOR);
+        // 清空redis游客区域统计
+        redisService.del(VISITOR_AREA);
     }
-
 
 }

@@ -1,5 +1,6 @@
 package com.itsharex.blog.controller;
 
+import com.itsharex.blog.dto.UserAreaDTO;
 import com.itsharex.blog.dto.UserBackDTO;
 import com.itsharex.blog.dto.UserInfoDTO;
 import com.itsharex.blog.service.UserAuthService;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * 用户账号控制器
@@ -46,6 +48,18 @@ public class UserAuthController {
     public Result<?> sendCode(String username) {
         userAuthService.sendCode(username);
         return Result.ok();
+    }
+
+    /**
+     * 获取用户区域分布
+     *
+     * @param conditionVO 条件
+     * @return {@link Result<UserAreaDTO>} 用户区域分布
+     */
+    @ApiOperation(value = "获取用户区域分布")
+    @GetMapping("/admin/user/area")
+    public Result<List<UserAreaDTO>> listUserAreas(ConditionVO conditionVO) {
+        return Result.ok(userAuthService.listUserAreas(conditionVO));
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.itsharex.blog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.itsharex.blog.dto.UserAreaDTO;
 import com.itsharex.blog.dto.UserBackDTO;
 import com.itsharex.blog.dto.UserInfoDTO;
 import com.itsharex.blog.entity.UserAuth;
@@ -10,6 +11,8 @@ import com.itsharex.blog.vo.PasswordVO;
 import com.itsharex.blog.vo.QQLoginVO;
 import com.itsharex.blog.vo.UserVO;
 import com.itsharex.blog.vo.WeiboLoginVO;
+
+import java.util.List;
 
 /**
  * 用户账号服务
@@ -25,6 +28,14 @@ public interface UserAuthService extends IService<UserAuth> {
      * @param username 邮箱号
      */
     void sendCode(String username);
+
+    /**
+     * 获取用户区域分布
+     *
+     * @param conditionVO 条件签证官
+     * @return {@link List<UserAreaDTO>} 用户区域分布
+     */
+    List<UserAreaDTO> listUserAreas(ConditionVO conditionVO);
 
     /**
      * 用户注册

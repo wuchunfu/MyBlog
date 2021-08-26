@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.itsharex.blog.dto.ArticleSearchDTO;
 import com.itsharex.blog.strategy.SearchStrategy;
+import lombok.extern.log4j.Log4j2;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -13,6 +14,7 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,7 @@ import static com.itsharex.blog.enums.ArticleStatusEnum.PUBLIC;
  * @author wuchunfu
  * @date 2021-08-21
  */
+@Log4j2
 @Service("esSearchStrategyImpl")
 public class EsSearchStrategyImpl implements SearchStrategy {
 
@@ -35,6 +38,9 @@ public class EsSearchStrategyImpl implements SearchStrategy {
 
     @Override
     public List<ArticleSearchDTO> searchArticle(String keywords) {
+        if (StringUtils.isBlank(keywords)) {
+            return new ArrayList<>();
+        }
         return search(buildQuery(keywords));
     }
 
@@ -49,12 +55,10 @@ public class EsSearchStrategyImpl implements SearchStrategy {
         NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         // 根据关键词搜索文章标题或内容
-        if (StringUtils.isNotBlank(keywords)) {
-            boolQueryBuilder.must(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("articleTitle", keywords))
-                            .should(QueryBuilders.matchQuery("articleContent", keywords)))
-                    .must(QueryBuilders.termQuery("isDelete", FALSE))
-                    .must(QueryBuilders.termQuery("status", PUBLIC.getStatus()));
-        }
+        boolQueryBuilder.must(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("articleTitle", keywords))
+                        .should(QueryBuilders.matchQuery("articleContent", keywords)))
+                .must(QueryBuilders.termQuery("isDelete", FALSE))
+                .must(QueryBuilders.termQuery("status", PUBLIC.getStatus()));
         // 查询
         nativeSearchQueryBuilder.withQuery(boolQueryBuilder);
         return nativeSearchQueryBuilder;
@@ -78,23 +82,28 @@ public class EsSearchStrategyImpl implements SearchStrategy {
         contentField.fragmentSize(200);
         nativeSearchQueryBuilder.withHighlightFields(titleField, contentField);
         // 搜索
-        SearchHits<ArticleSearchDTO> search = elasticsearchRestTemplate.search(nativeSearchQueryBuilder.build(), ArticleSearchDTO.class);
-        return search.getSearchHits().stream().map(hit -> {
-            ArticleSearchDTO article = hit.getContent();
-            // 获取文章标题高亮数据
-            List<String> titleHighLightList = hit.getHighlightFields().get("articleTitle");
-            if (CollectionUtils.isNotEmpty(titleHighLightList)) {
-                // 替换标题数据
-                article.setArticleTitle(titleHighLightList.get(0));
-            }
-            // 获取文章内容高亮数据
-            List<String> contentHighLightList = hit.getHighlightFields().get("articleContent");
-            if (CollectionUtils.isNotEmpty(contentHighLightList)) {
-                // 替换内容数据
-                article.setArticleContent(contentHighLightList.get(contentHighLightList.size() - 1));
-            }
-            return article;
-        }).collect(Collectors.toList());
+        try {
+            SearchHits<ArticleSearchDTO> search = elasticsearchRestTemplate.search(nativeSearchQueryBuilder.build(), ArticleSearchDTO.class);
+            return search.getSearchHits().stream().map(hit -> {
+                ArticleSearchDTO article = hit.getContent();
+                // 获取文章标题高亮数据
+                List<String> titleHighLightList = hit.getHighlightFields().get("articleTitle");
+                if (CollectionUtils.isNotEmpty(titleHighLightList)) {
+                    // 替换标题数据
+                    article.setArticleTitle(titleHighLightList.get(0));
+                }
+                // 获取文章内容高亮数据
+                List<String> contentHighLightList = hit.getHighlightFields().get("articleContent");
+                if (CollectionUtils.isNotEmpty(contentHighLightList)) {
+                    // 替换内容数据
+                    article.setArticleContent(contentHighLightList.get(contentHighLightList.size() - 1));
+                }
+                return article;
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return null;
     }
 
 }

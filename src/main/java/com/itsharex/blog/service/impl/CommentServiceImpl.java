@@ -2,6 +2,7 @@ package com.itsharex.blog.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itsharex.blog.constant.CommonConst;
@@ -82,6 +83,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, Comment> impleme
         }
         // 分页查询评论集合
         List<CommentDTO> commentDTOList = commentDao.listComments(PageUtils.getLimitCurrent(), PageUtils.getSize(), articleId);
+        if (CollectionUtils.isEmpty(commentDTOList)) {
+            return new PageResult<>();
+        }
         // 查询redis的评论点赞数据
         Map<String, Object> likeCountMap = redisService.hGetAll(RedisPrefixConst.COMMENT_LIKE_COUNT);
         // 提取评论id集合

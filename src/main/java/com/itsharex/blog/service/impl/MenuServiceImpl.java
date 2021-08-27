@@ -52,15 +52,27 @@ public class MenuServiceImpl extends ServiceImpl<MenuDao, Menu> implements MenuS
         // 获取目录下的子菜单
         Map<Integer, List<Menu>> childrenMap = getMenuMap(menuList);
         // 组装目录菜单数据
-        return catalogList.stream().map(item -> {
+        List<MenuDTO> menuDTOList = catalogList.stream().map(item -> {
             MenuDTO menuDTO = BeanCopyUtils.copyObject(item, MenuDTO.class);
             // 获取目录下的菜单排序
             List<MenuDTO> list = BeanCopyUtils.copyList(childrenMap.get(item.getId()), MenuDTO.class).stream()
                     .sorted(Comparator.comparing(MenuDTO::getOrderNum))
                     .collect(Collectors.toList());
             menuDTO.setChildren(list);
+            childrenMap.remove(item.getId());
             return menuDTO;
         }).sorted(Comparator.comparing(MenuDTO::getOrderNum)).collect(Collectors.toList());
+        // 若还有菜单未取出则拼接
+        if (CollectionUtils.isNotEmpty(childrenMap)) {
+            List<Menu> childrenList = new ArrayList<>();
+            childrenMap.values().forEach(childrenList::addAll);
+            List<MenuDTO> childrenDTOList = childrenList.stream()
+                    .map(item -> BeanCopyUtils.copyObject(item, MenuDTO.class))
+                    .sorted(Comparator.comparing(MenuDTO::getOrderNum))
+                    .collect(Collectors.toList());
+            menuDTOList.addAll(childrenDTOList);
+        }
+        return menuDTOList;
     }
 
     @Transactional(rollbackFor = Exception.class)

@@ -3,6 +3,7 @@ package com.itsharex.blog.controller;
 import com.itsharex.blog.dto.LabelOptionDTO;
 import com.itsharex.blog.dto.ResourceDTO;
 import com.itsharex.blog.service.ResourceService;
+import com.itsharex.blog.vo.ConditionVO;
 import com.itsharex.blog.vo.ResourceVO;
 import com.itsharex.blog.vo.Result;
 import io.swagger.annotations.Api;
@@ -44,8 +45,8 @@ public class ResourceController {
      */
     @ApiOperation(value = "查看资源列表")
     @GetMapping("/admin/resources")
-    public Result<List<ResourceDTO>> listResources() {
-        return Result.ok(resourceService.listResources());
+    public Result<List<ResourceDTO>> listResources(ConditionVO conditionVO) {
+        return Result.ok(resourceService.listResources(conditionVO));
     }
 
     /**

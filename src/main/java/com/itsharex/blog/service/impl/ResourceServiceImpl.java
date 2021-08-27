@@ -1,6 +1,8 @@
 package com.itsharex.blog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itsharex.blog.constant.CommonConst;
 import com.itsharex.blog.dao.ResourceDao;
@@ -13,6 +15,7 @@ import com.itsharex.blog.exception.BizException;
 import com.itsharex.blog.handler.FilterInvocationSecurityMetadataSourceImpl;
 import com.itsharex.blog.service.ResourceService;
 import com.itsharex.blog.util.BeanCopyUtils;
+import com.itsharex.blog.vo.ConditionVO;
 import com.itsharex.blog.vo.ResourceVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,7 +98,7 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceDao, Resource> impl
         // 查询是否有角色关联
         Integer count = roleResourceDao.selectCount(new LambdaQueryWrapper<RoleResource>()
                 .eq(RoleResource::getResourceId, resourceId));
-        if (count > 1) {
+        if (count > 0) {
             throw new BizException("该资源下存在角色");
         }
         // 删除子资源
@@ -110,20 +113,32 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceDao, Resource> impl
     }
 
     @Override
-    public List<ResourceDTO> listResources() {
+    public List<ResourceDTO> listResources(ConditionVO conditionVO) {
         // 查询资源列表
-        List<Resource> resourceList = resourceDao.selectList(null);
+        List<Resource> resourceList = resourceDao.selectList(new LambdaQueryWrapper<Resource>()
+                .like(StringUtils.isNotBlank(conditionVO.getKeywords()), Resource::getResourceName, conditionVO.getKeywords()));
         // 获取所有模块
         List<Resource> parentList = listResourceModule(resourceList);
         // 根据父id分组获取模块下的资源
         Map<Integer, List<Resource>> childrenMap = listResourceChildren(resourceList);
         // 绑定模块下的所有接口
-        return parentList.stream().map(item -> {
+        List<ResourceDTO> resourceDTOList = parentList.stream().map(item -> {
             ResourceDTO resourceDTO = BeanCopyUtils.copyObject(item, ResourceDTO.class);
             List<ResourceDTO> childrenList = BeanCopyUtils.copyList(childrenMap.get(item.getId()), ResourceDTO.class);
             resourceDTO.setChildren(childrenList);
+            childrenMap.remove(item.getId());
             return resourceDTO;
         }).collect(Collectors.toList());
+        // 若还有资源未取出则拼接
+        if (CollectionUtils.isNotEmpty(childrenMap)) {
+            List<Resource> childrenList = new ArrayList<>();
+            childrenMap.values().forEach(childrenList::addAll);
+            List<ResourceDTO> childrenDTOList = childrenList.stream()
+                    .map(item -> BeanCopyUtils.copyObject(item, ResourceDTO.class))
+                    .collect(Collectors.toList());
+            resourceDTOList.addAll(childrenDTOList);
+        }
+        return resourceDTOList;
     }
 
     @Override
@@ -140,7 +155,7 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceDao, Resource> impl
         return parentList.stream().map(item -> {
             List<LabelOptionDTO> list = new ArrayList<>();
             List<Resource> children = childrenMap.get(item.getId());
-            if (Objects.nonNull(children)) {
+            if (CollectionUtils.isNotEmpty(children)) {
                 list = children.stream()
                         .map(resource -> LabelOptionDTO.builder()
                                 .id(resource.getId())

@@ -191,11 +191,6 @@ INSERT INTO `tb_menu` VALUES (19, '日志管理', '/log-submenu', 'Layout', 'el-
 INSERT INTO `tb_menu` VALUES (20, '操作日志', '/operation/log', '/log/Operation.vue', 'el-icon-myguanyuwo', '2021-01-31 15:53:21', '2021-01-31 15:53:25', 1, 19, 0);
 INSERT INTO `tb_menu` VALUES (201, '在线用户', '/online/users', '/user/Online.vue', 'el-icon-myyonghuliebiao', '2021-02-05 14:59:51', '2021-02-05 14:59:53', 7, 202, 0);
 INSERT INTO `tb_menu` VALUES (202, '用户管理', '/users-submenu', 'Layout', 'el-icon-myyonghuliebiao', '2021-02-06 23:44:59', '2021-02-06 23:45:03', 4, NULL, 0);
-INSERT INTO `tb_menu` VALUES (205, '相册管理', '/album-submenu', 'Layout', 'el-icon-myimage-fill', '2021-08-03 15:10:54', '2021-08-07 20:02:06', 5, NULL, 0);
-INSERT INTO `tb_menu` VALUES (206, '相册列表', '/albums', '/album/Album.vue', 'el-icon-myzhaopian', '2021-08-03 20:29:19', '2021-08-04 11:45:47', 1, 205, 0);
-INSERT INTO `tb_menu` VALUES (208, '照片管理', '/albums/:albumId', '/album/Photo.vue', 'el-icon-myzhaopian', '2021-08-03 21:37:47', '2021-08-05 10:24:08', 1, 205, 1);
-INSERT INTO `tb_menu` VALUES (209, '页面管理', '/pages', '/page/Page.vue', 'el-icon-myyemianpeizhi', '2021-08-04 11:36:27', '2021-08-07 20:01:26', 2, 4, 0);
-INSERT INTO `tb_menu` VALUES (210, '照片回收站', '/photos/delete', '/album/Delete.vue', 'el-icon-myhuishouzhan', '2021-08-05 13:55:19', NULL, 3, 205, 1);
 INSERT INTO `tb_menu` VALUES (213, '权限管理', '/permission-submenu', 'Layout', 'el-icon-mydaohanglantubiao_quanxianguanli', '2021-08-07 19:56:55', '2021-08-07 19:59:40', 4, NULL, 0);
 INSERT INTO `tb_menu` VALUES (214, '网站管理', '/website', '/website/Website.vue', 'el-icon-myxitong', '2021-08-07 20:06:41', NULL, 1, 4, 0);
 
@@ -271,7 +266,6 @@ INSERT INTO `tb_page` VALUES (1, '首页', 'home', 'https://www.static.talkxj.co
 INSERT INTO `tb_page` VALUES (2, '归档', 'archive', 'https://www.static.talkxj.com/wallroom-1920x1080-bg-338d7bc.jpg', '2021-08-07 10:32:36', NULL);
 INSERT INTO `tb_page` VALUES (3, '分类', 'category', 'https://www.static.talkxj.com/wallhaven-13mk9v.jpg', '2021-08-07 10:32:36', NULL);
 INSERT INTO `tb_page` VALUES (4, '标签', 'tag', 'https://www.static.talkxj.com/photos/a6f141372509365891081d755da963a1.png', '2021-08-07 10:32:36', '2021-08-07 11:21:54');
-INSERT INTO `tb_page` VALUES (5, '相册', 'album', 'https://www.static.talkxj.com/album.jpg', '2021-08-07 10:32:36', NULL);
 INSERT INTO `tb_page` VALUES (6, '友链', 'link', 'https://www.static.talkxj.com/fdl.jpg', '2021-08-07 10:32:36', NULL);
 INSERT INTO `tb_page` VALUES (7, '关于', 'about', 'https://www.static.talkxj.com/about.jpg', '2021-08-07 10:32:36', NULL);
 INSERT INTO `tb_page` VALUES (8, '留言', 'message', 'https://www.static.talkxj.com/d5ojdj.jpg', '2021-08-07 10:32:36', NULL);

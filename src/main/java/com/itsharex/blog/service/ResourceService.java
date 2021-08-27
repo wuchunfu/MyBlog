@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.itsharex.blog.dto.LabelOptionDTO;
 import com.itsharex.blog.dto.ResourceDTO;
 import com.itsharex.blog.entity.Resource;
+import com.itsharex.blog.vo.ConditionVO;
 import com.itsharex.blog.vo.ResourceVO;
 
 import java.util.List;
@@ -38,9 +39,10 @@ public interface ResourceService extends IService<Resource> {
     /**
      * 查看资源列表
      *
+     * @param conditionVO 条件
      * @return 资源列表
      */
-    List<ResourceDTO> listResources();
+    List<ResourceDTO> listResources(ConditionVO conditionVO);
 
     /**
      * 查看资源选项

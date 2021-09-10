@@ -2,6 +2,7 @@ package com.itsharex.blog.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.itsharex.blog.constant.CommonConst;
 import com.itsharex.blog.constant.RedisPrefixConst;
@@ -35,7 +36,6 @@ import eu.bitwalker.useragentutils.UserAgent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
@@ -135,33 +135,22 @@ public class BlogInfoServiceImpl implements BlogInfoService {
         List<TagDTO> tagDTOList = BeanCopyUtils.copyList(tagDao.selectList(null), TagDTO.class);
         // 查询redis访问量前五的文章
         Map<Object, Double> articleMap = redisService.zReverseRangeWithScore(RedisPrefixConst.ARTICLE_VIEWS_COUNT, 0, 4);
-        // 文章为空直接返回
-        if (CollectionUtils.isEmpty(articleMap)) {
-            return BlogBackInfoDTO.builder()
-                    .articleStatisticsList(articleStatisticsList)
-                    .tagDTOList(tagDTOList)
-                    .viewsCount(viewsCount)
-                    .messageCount(messageCount)
-                    .userCount(userCount)
-                    .articleCount(articleCount)
-                    .categoryDTOList(categoryDTOList)
-                    .uniqueViewDTOList(uniqueViewList)
-                    .build();
-        }
-        // 查询文章数据
-        // 查询文章排行
-        List<ArticleRankDTO> articleRankDTOList = listArticleRank(articleMap);
-        return BlogBackInfoDTO.builder()
+        BlogBackInfoDTO blogBackInfoDTO = BlogBackInfoDTO.builder()
                 .articleStatisticsList(articleStatisticsList)
+                .tagDTOList(tagDTOList)
                 .viewsCount(viewsCount)
                 .messageCount(messageCount)
                 .userCount(userCount)
                 .articleCount(articleCount)
-                .tagDTOList(tagDTOList)
                 .categoryDTOList(categoryDTOList)
                 .uniqueViewDTOList(uniqueViewList)
-                .articleRankDTOList(articleRankDTOList)
                 .build();
+        if (CollectionUtils.isNotEmpty(articleMap)) {
+            // 查询文章排行
+            List<ArticleRankDTO> articleRankDTOList = listArticleRank(articleMap);
+            blogBackInfoDTO.setArticleRankDTOList(articleRankDTOList);
+        }
+        return blogBackInfoDTO;
     }
 
     @Override

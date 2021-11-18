@@ -350,7 +350,7 @@ export default {
         type: this.type
       };
       this.axios
-        .get("/api/admin/user/area", { params: params })
+        .get("/api/admin/users/area", { params: params })
         .then(({ data }) => {
           this.userAreaMap.series[0].data = data.data;
         });

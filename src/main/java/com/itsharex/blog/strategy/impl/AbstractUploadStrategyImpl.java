@@ -1,6 +1,5 @@
 package com.itsharex.blog.strategy.impl;
 
-import com.itsharex.blog.enums.FileExtEnum;
 import com.itsharex.blog.exception.BizException;
 import com.itsharex.blog.strategy.UploadStrategy;
 import com.itsharex.blog.util.FileUtils;
@@ -9,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 
 /**
  * 抽象上传模板
@@ -29,23 +27,12 @@ public abstract class AbstractUploadStrategyImpl implements UploadStrategy {
             String extName = FileUtils.getExtName(file.getOriginalFilename());
             // 重新生成文件名
             String fileName = md5 + extName;
-            // 判断文件是否已经上传
+            // 判断文件是否已存在
             if (!exists(path + fileName)) {
-                InputStream inputStream;
-                // 判断上传文件类型（图片，音频）
-                switch (Objects.requireNonNull(FileExtEnum.getFileExt(extName))) {
-                    case JPG:
-                    case PNG:
-                    case JPEG:
-                        // 压缩图片
-                        inputStream = FileUtils.compressImage(file.getInputStream(), file.getSize());
-                        break;
-                    default:
-                        inputStream = file.getInputStream();
-                        break;
-                }
-                upload(path, fileName, inputStream);
+                // 不存在则继续上传
+                upload(path, fileName, file.getInputStream());
             }
+            // 返回文件访问路径
             return getFileAccessUrl(path + fileName);
         } catch (Exception e) {
             e.printStackTrace();

@@ -52,6 +52,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import static com.itsharex.blog.constant.CommonConst.ARTICLE_SET;
 import static com.itsharex.blog.enums.ArticleStatusEnum.DRAFT;
 import static com.itsharex.blog.enums.ArticleStatusEnum.PUBLIC;
 
@@ -127,7 +128,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
 
     @Override
     public ArticlePreviewListDTO listArticlesByCondition(ConditionVO condition) {
-        // 搜索文章
+        // 查询文章
         List<ArticlePreviewDTO> articlePreviewDTOList = articleDao.listArticlesByCondition(PageUtils.getLimitCurrent(), PageUtils.getSize(), condition);
         // 搜索条件对应名(标签或分类名)
         String name;
@@ -212,11 +213,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
     @Async
     public void updateArticleViewsCount(Integer articleId) {
         // 判断是否第一次访问，增加浏览量
-        Set<Integer> articleSet = (Set<Integer>) Optional.ofNullable(session.getAttribute(CommonConst.ARTICLE_SET))
-                .orElse(new HashSet<>());
+        Set<Integer> articleSet = (Set<Integer>) Optional.ofNullable(session.getAttribute(ARTICLE_SET)).orElse(new HashSet<>());
         if (!articleSet.contains(articleId)) {
             articleSet.add(articleId);
-            session.setAttribute(CommonConst.ARTICLE_SET, articleSet);
+            session.setAttribute(ARTICLE_SET, articleSet);
             // 浏览量+1
             redisService.zIncr(RedisPrefixConst.ARTICLE_VIEWS_COUNT, articleId, 1D);
         }

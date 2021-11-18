@@ -80,28 +80,6 @@ CREATE TABLE `tb_category`  (
 INSERT INTO `tb_category` VALUES (184, '测试分类', '2021-08-12 15:50:57', NULL);
 
 -- ----------------------------
--- Table structure for tb_chat_record
--- ----------------------------
-DROP TABLE IF EXISTS `tb_chat_record`;
-CREATE TABLE `tb_chat_record`  (
-  `id` int NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `user_id` int NULL DEFAULT NULL COMMENT '用户id',
-  `nickname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '昵称',
-  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '头像',
-  `content` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '聊天内容',
-  `ip_address` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ip地址',
-  `ip_source` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ip来源',
-  `type` tinyint NOT NULL COMMENT '类型',
-  `create_time` datetime NOT NULL COMMENT '创建时间',
-  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of tb_chat_record
--- ----------------------------
-
--- ----------------------------
 -- Table structure for tb_comment
 -- ----------------------------
 DROP TABLE IF EXISTS `tb_comment`;

@@ -22,6 +22,7 @@ import com.itsharex.blog.entity.UserRole;
 import com.itsharex.blog.enums.LoginTypeEnum;
 import com.itsharex.blog.enums.RoleEnum;
 import com.itsharex.blog.exception.BizException;
+import com.itsharex.blog.service.BlogInfoService;
 import com.itsharex.blog.service.RedisService;
 import com.itsharex.blog.service.UserAuthService;
 import com.itsharex.blog.strategy.context.SocialLoginStrategyContext;
@@ -73,6 +74,8 @@ public class UserAuthServiceImpl extends ServiceImpl<UserAuthDao, UserAuth> impl
     private UserRoleDao userRoleDao;
     @Autowired
     private UserInfoDao userInfoDao;
+    @Autowired
+    private BlogInfoService blogInfoService;
     @Autowired
     private RabbitTemplate rabbitTemplate;
     @Autowired
@@ -137,7 +140,7 @@ public class UserAuthServiceImpl extends ServiceImpl<UserAuthDao, UserAuth> impl
         UserInfo userInfo = UserInfo.builder()
                 .email(user.getUsername())
                 .nickname(CommonConst.DEFAULT_NICKNAME + IdWorker.getId())
-                .avatar(CommonConst.DEFAULT_AVATAR)
+                .avatar(blogInfoService.getWebsiteConfig().getUserAvatar())
                 .build();
         userInfoDao.insert(userInfo);
         // 绑定用户角色

@@ -20,6 +20,20 @@ const routes = [
     }
   },
   {
+    path: "/talks",
+    component: resolve => require(["../views/talk/Talk.vue"], resolve),
+    meta: {
+      title: "说说"
+    }
+  },
+  {
+    path: "/talks/:talkId",
+    component: resolve => require(["../views/talk/TalkInfo.vue"], resolve),
+    meta: {
+      title: "说说"
+    }
+  },
+  {
     path: "/tags",
     component: resolve => require(["../views/tag/Tag.vue"], resolve),
     meta: {

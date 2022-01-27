@@ -7,7 +7,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.itsharex.blog.constant.CommonConst.FALSE;
@@ -86,6 +88,11 @@ public class UserDetailDTO implements UserDetails {
      * 点赞评论集合
      */
     private Set<Object> commentLikeSet;
+
+    /**
+     * 点赞说说集合
+     */
+    private Set<Object> talkLikeSet;
 
     /**
      * 用户登录ip

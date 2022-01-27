@@ -49,6 +49,11 @@ public class CommentBackDTO {
     private String commentContent;
 
     /**
+     * 评论类型
+     */
+    private Integer type;
+
+    /**
      * 是否审核
      */
     private Integer isReview;
@@ -57,6 +62,5 @@ public class CommentBackDTO {
      * 发表时间
      */
     private LocalDateTime createTime;
-
 
 }

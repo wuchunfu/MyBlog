@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static com.itsharex.blog.constant.RedisPrefixConst.TALK_USER_LIKE;
 import static com.itsharex.blog.enums.ZoneEnum.SHANGHAI;
 
 /**
@@ -78,6 +79,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // 查询账号点赞信息
         Set<Object> articleLikeSet = redisService.sMembers(RedisPrefixConst.ARTICLE_USER_LIKE + userInfo.getId());
         Set<Object> commentLikeSet = redisService.sMembers(RedisPrefixConst.COMMENT_USER_LIKE + userInfo.getId());
+        Set<Object> talkLikeSet = redisService.sMembers(TALK_USER_LIKE + userInfo.getId());
         // 获取设备信息
         String ipAddress = IpUtils.getIpAddress(request);
         String ipSource = IpUtils.getIpSource(ipAddress);
@@ -97,6 +99,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .webSite(userInfo.getWebSite())
                 .articleLikeSet(articleLikeSet)
                 .commentLikeSet(commentLikeSet)
+                .talkLikeSet(talkLikeSet)
                 .ipAddress(ipAddress)
                 .ipSource(ipSource)
                 .isDisable(userInfo.getIsDisable())

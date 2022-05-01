@@ -14,16 +14,14 @@
         FROM
         tb_comment c
         JOIN tb_user_info u ON c.user_id = u.id
-        WHERE
-        <if test="commentVO.type == 1">
-            article_id = #{commentVO.articleId}
-        </if>
-        <if test="commentVO.type == 2">
-            type = 2
-        </if>
-        <if test="commentVO.type == 3">
-            talk_id = #{commentVO.talkId}
-        </if>
+        <where>
+            <if test="commentVO.topicId != null">
+                topic_id = #{commentVO.topicId}
+            </if>
+            AND type = #{commentVO.type}
+            AND c.is_review = 1
+            AND parent_id IS NULL
+        </where>
         AND c.is_review = 1
         AND parent_id IS NULL
         ORDER BY
@@ -118,7 +116,7 @@
         c.is_review
         FROM
         tb_comment c
-        LEFT JOIN tb_article a ON c.article_id = a.id
+        LEFT JOIN tb_article a ON c.topic_id = a.id
         LEFT JOIN tb_user_info u ON c.user_id = u.id
         LEFT JOIN tb_user_info r ON c.reply_user_id = r.id
         <where>
@@ -156,21 +154,21 @@
         </where>
     </select>
 
-    <select id="listCommentCountByTalkIds" resultType="com.itsharex.blog.dto.CommentCountDTO">
+    <select id="listCommentCountByTopicIds" resultType="com.itsharex.blog.dto.CommentCountDTO">
         SELECT
-        talk_id as id,
+        topic_id as id,
         COUNT( 1 ) AS comment_count
         FROM
         tb_comment
         WHERE
-        talk_id IN
-        <foreach open="(" collection="talkIdList" item="talkId" separator="," close=")">
-            #{talkId}
+        topic_id IN
+        <foreach open="(" collection="topicIdList" item="topicId" separator="," close=")">
+            #{topicId}
         </foreach>
         AND
         parent_id IS NULL
         GROUP BY
-        talk_id
+        topic_id
     </select>
 
 </mapper>

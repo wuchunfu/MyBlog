@@ -159,7 +159,6 @@ public class UserAuthServiceImpl extends ServiceImpl<UserAuthDao, UserAuth> impl
         userAuthDao.insert(userAuth);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updatePassword(UserVO user) {
         // 校验账号是否合法
@@ -172,7 +171,6 @@ public class UserAuthServiceImpl extends ServiceImpl<UserAuthDao, UserAuth> impl
                 .eq(UserAuth::getUsername, user.getUsername()));
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateAdminPassword(PasswordVO passwordVO) {
         // 查询旧密码是否正确

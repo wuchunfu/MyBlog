@@ -82,11 +82,8 @@ export default {
         commentContent: this.commentContent
       };
       switch (this.type) {
-        case 1:
-          comment.articleId = arr[2];
-          break;
         case 3:
-          comment.talkId = arr[2];
+          comment.topicId = arr[2];
           break;
         default:
           break;

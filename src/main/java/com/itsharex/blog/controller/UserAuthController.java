@@ -1,5 +1,6 @@
 package com.itsharex.blog.controller;
 
+import com.itsharex.blog.annotation.AccessLimit;
 import com.itsharex.blog.dto.UserAreaDTO;
 import com.itsharex.blog.dto.UserBackDTO;
 import com.itsharex.blog.dto.UserInfoDTO;
@@ -42,6 +43,7 @@ public class UserAuthController {
      * @param username 用户名
      * @return {@link Result <>}
      */
+    @AccessLimit(seconds = 60, maxCount = 1)
     @ApiOperation(value = "发送邮箱验证码")
     @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
     @GetMapping("/users/code")

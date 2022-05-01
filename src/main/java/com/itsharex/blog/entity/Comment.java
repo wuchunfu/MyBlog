@@ -42,14 +42,9 @@ public class Comment {
     private Integer replyUserId;
 
     /**
-     * 评论说说id
+     * 评论主题id
      */
-    private Integer talkId;
-
-    /**
-     * 评论文章id
-     */
-    private Integer articleId;
+    private Integer topicId;
 
     /**
      * 评论内容
@@ -65,6 +60,11 @@ public class Comment {
      * 评论类型 1.文章 2.友链 3.说说
      */
     private Integer type;
+
+    /**
+     * 是否删除
+     */
+    private Integer isDelete;
 
     /**
      * 是否审核

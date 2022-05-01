@@ -210,7 +210,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
      *
      * @param articleId 文章id
      */
-    @Async
     public void updateArticleViewsCount(Integer articleId) {
         // 判断是否第一次访问，增加浏览量
         Set<Integer> articleSet = (Set<Integer>) Optional.ofNullable(session.getAttribute(ARTICLE_SET)).orElse(new HashSet<>());
@@ -222,8 +221,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
         }
     }
 
-
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveArticleLike(Integer articleId) {
         // 判断是否点赞
@@ -252,7 +249,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
             article.setCategoryId(category.getId());
         }
         article.setUserId(UserUtils.getLoginUser().getUserInfoId());
-        articleService.saveOrUpdate(article);
+        this.saveOrUpdate(article);
         // 保存文章标签
         saveArticleTag(articleVO, article.getId());
     }
@@ -322,7 +319,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateArticleTop(ArticleTopVO articleTopVO) {
         // 修改文章置顶状态
@@ -333,7 +329,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
         articleDao.updateById(article);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateArticleDelete(DeleteVO deleteVO) {
         // 修改文章逻辑删除状态
@@ -344,7 +339,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
                         .isDelete(deleteVO.getIsDelete())
                         .build())
                 .collect(Collectors.toList());
-        articleService.updateBatchById(articleList);
+        this.updateBatchById(articleList);
     }
 
     @Transactional(rollbackFor = Exception.class)

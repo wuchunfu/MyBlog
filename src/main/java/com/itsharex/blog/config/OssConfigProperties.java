@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * oss配置属性
+ * 阿里云 oss 配置属性
  *
  * @author wuchunfu
  * @date 2021-08-21

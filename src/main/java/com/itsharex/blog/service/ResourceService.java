@@ -18,11 +18,6 @@ import java.util.List;
 public interface ResourceService extends IService<Resource> {
 
     /**
-     * 导入swagger权限
-     */
-    void importSwagger();
-
-    /**
      * 添加或修改资源
      *
      * @param resourceVO 资源对象

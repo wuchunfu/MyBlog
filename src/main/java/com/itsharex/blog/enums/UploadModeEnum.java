@@ -13,13 +13,17 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum UploadModeEnum {
     /**
+     * 本地
+     */
+    LOCAL("local", "localUploadStrategyImpl"),
+    /**
      * oss
      */
     OSS("oss", "ossUploadStrategyImpl"),
     /**
-     * 本地
+     * cos
      */
-    LOCAL("local", "localUploadStrategyImpl");
+    COS("cos", "cosUploadStrategyImpl");
 
     /**
      * 模式

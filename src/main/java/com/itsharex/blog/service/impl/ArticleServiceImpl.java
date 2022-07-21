@@ -30,6 +30,7 @@ import com.itsharex.blog.service.RedisService;
 import com.itsharex.blog.service.TagService;
 import com.itsharex.blog.strategy.context.SearchStrategyContext;
 import com.itsharex.blog.util.BeanCopyUtils;
+import com.itsharex.blog.util.CommonUtils;
 import com.itsharex.blog.util.PageUtils;
 import com.itsharex.blog.util.UserUtils;
 import com.itsharex.blog.vo.ArticleTopVO;
@@ -53,6 +54,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.itsharex.blog.constant.CommonConst.ARTICLE_SET;
+import static com.itsharex.blog.constant.RedisPrefixConst.ARTICLE_VIEWS_COUNT;
 import static com.itsharex.blog.enums.ArticleStatusEnum.DRAFT;
 import static com.itsharex.blog.enums.ArticleStatusEnum.PUBLIC;
 
@@ -81,8 +83,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
     @Autowired
     private RedisService redisService;
     @Autowired
-    private ArticleService articleService;
-    @Autowired
     private ArticleTagService articleTagService;
 
     @Override
@@ -108,7 +108,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
         // 查询后台文章
         List<ArticleBackDTO> articleBackDTOList = articleDao.listArticleBacks(PageUtils.getLimitCurrent(), PageUtils.getSize(), condition);
         // 查询文章点赞量和浏览量
-        Map<Object, Double> viewsCountMap = redisService.zAllScore(RedisPrefixConst.ARTICLE_VIEWS_COUNT);
+        Map<Object, Double> viewsCountMap = redisService.zAllScore(ARTICLE_VIEWS_COUNT);
         Map<String, Object> likeCountMap = redisService.hGetAll(RedisPrefixConst.ARTICLE_LIKE_COUNT);
         // 封装点赞量和浏览量
         articleBackDTOList.forEach(item -> {
@@ -190,7 +190,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
         article.setLastArticle(BeanCopyUtils.copyObject(lastArticle, ArticlePaginationDTO.class));
         article.setNextArticle(BeanCopyUtils.copyObject(nextArticle, ArticlePaginationDTO.class));
         // 封装点赞量和浏览量
-        Double score = redisService.zScore(RedisPrefixConst.ARTICLE_VIEWS_COUNT, articleId);
+        Double score = redisService.zScore(ARTICLE_VIEWS_COUNT, articleId);
         if (Objects.nonNull(score)) {
             article.setViewsCount(score.intValue());
         }
@@ -203,22 +203,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
             e.printStackTrace();
         }
         return article;
-    }
-
-    /**
-     * 更新文章浏览量
-     *
-     * @param articleId 文章id
-     */
-    public void updateArticleViewsCount(Integer articleId) {
-        // 判断是否第一次访问，增加浏览量
-        Set<Integer> articleSet = (Set<Integer>) Optional.ofNullable(session.getAttribute(ARTICLE_SET)).orElse(new HashSet<>());
-        if (!articleSet.contains(articleId)) {
-            articleSet.add(articleId);
-            session.setAttribute(ARTICLE_SET, articleSet);
-            // 浏览量+1
-            redisService.zIncr(RedisPrefixConst.ARTICLE_VIEWS_COUNT, articleId, 1D);
-        }
     }
 
     @Override
@@ -271,52 +255,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
             categoryDao.insert(category);
         }
         return category;
-    }
-
-    /**
-     * 保存文章标签
-     *
-     * @param articleVO 文章信息
-     */
-    private void saveArticleTag(ArticleVO articleVO, Integer articleId) {
-        // 编辑文章则删除文章所有标签
-        if (Objects.nonNull(articleVO.getId())) {
-            articleTagDao.delete(new LambdaQueryWrapper<ArticleTag>()
-                    .eq(ArticleTag::getArticleId, articleVO.getId()));
-        }
-        // 添加文章标签
-        List<String> tagNameList = articleVO.getTagNameList();
-        if (CollectionUtils.isNotEmpty(tagNameList)) {
-            // 查询已存在的标签
-            List<Tag> existTagList = tagService.list(new LambdaQueryWrapper<Tag>()
-                    .in(Tag::getTagName, tagNameList));
-            List<String> existTagNameList = existTagList.stream()
-                    .map(Tag::getTagName)
-                    .collect(Collectors.toList());
-            List<Integer> existTagIdList = existTagList.stream()
-                    .map(Tag::getId)
-                    .collect(Collectors.toList());
-            // 对比新增不存在的标签
-            tagNameList.removeAll(existTagNameList);
-            if (CollectionUtils.isNotEmpty(tagNameList)) {
-                List<Tag> tagList = tagNameList.stream().map(item -> Tag.builder()
-                                .tagName(item)
-                                .build())
-                        .collect(Collectors.toList());
-                tagService.saveBatch(tagList);
-                List<Integer> tagIdList = tagList.stream()
-                        .map(Tag::getId)
-                        .collect(Collectors.toList());
-                existTagIdList.addAll(tagIdList);
-            }
-            // 提取标签id绑定文章
-            List<ArticleTag> articleTagList = existTagIdList.stream().map(item -> ArticleTag.builder()
-                            .articleId(articleId)
-                            .tagId(item)
-                            .build())
-                    .collect(Collectors.toList());
-            articleTagService.saveBatch(articleTagList);
-        }
     }
 
     @Override
@@ -374,6 +312,68 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, Article> impleme
         articleVO.setCategoryName(categoryName);
         articleVO.setTagNameList(tagNameList);
         return articleVO;
+    }
+
+    /**
+     * 更新文章浏览量
+     *
+     * @param articleId 文章id
+     */
+    public void updateArticleViewsCount(Integer articleId) {
+        // 判断是否第一次访问，增加浏览量
+        Set<Integer> articleSet = CommonUtils.castSet(Optional.ofNullable(session.getAttribute(ARTICLE_SET)).orElseGet(HashSet::new), Integer.class);
+        if (!articleSet.contains(articleId)) {
+            articleSet.add(articleId);
+            session.setAttribute(ARTICLE_SET, articleSet);
+            // 浏览量+1
+            redisService.zIncr(ARTICLE_VIEWS_COUNT, articleId, 1D);
+        }
+    }
+
+    /**
+     * 保存文章标签
+     *
+     * @param articleVO 文章信息
+     */
+    private void saveArticleTag(ArticleVO articleVO, Integer articleId) {
+        // 编辑文章则删除文章所有标签
+        if (Objects.nonNull(articleVO.getId())) {
+            articleTagDao.delete(new LambdaQueryWrapper<ArticleTag>()
+                    .eq(ArticleTag::getArticleId, articleVO.getId()));
+        }
+        // 添加文章标签
+        List<String> tagNameList = articleVO.getTagNameList();
+        if (CollectionUtils.isNotEmpty(tagNameList)) {
+            // 查询已存在的标签
+            List<Tag> existTagList = tagService.list(new LambdaQueryWrapper<Tag>()
+                    .in(Tag::getTagName, tagNameList));
+            List<String> existTagNameList = existTagList.stream()
+                    .map(Tag::getTagName)
+                    .collect(Collectors.toList());
+            List<Integer> existTagIdList = existTagList.stream()
+                    .map(Tag::getId)
+                    .collect(Collectors.toList());
+            // 对比新增不存在的标签
+            tagNameList.removeAll(existTagNameList);
+            if (CollectionUtils.isNotEmpty(tagNameList)) {
+                List<Tag> tagList = tagNameList.stream().map(item -> Tag.builder()
+                                .tagName(item)
+                                .build())
+                        .collect(Collectors.toList());
+                tagService.saveBatch(tagList);
+                List<Integer> tagIdList = tagList.stream()
+                        .map(Tag::getId)
+                        .collect(Collectors.toList());
+                existTagIdList.addAll(tagIdList);
+            }
+            // 提取标签id绑定文章
+            List<ArticleTag> articleTagList = existTagIdList.stream().map(item -> ArticleTag.builder()
+                            .articleId(articleId)
+                            .tagId(item)
+                            .build())
+                    .collect(Collectors.toList());
+            articleTagService.saveBatch(articleTagList);
+        }
     }
 
 }

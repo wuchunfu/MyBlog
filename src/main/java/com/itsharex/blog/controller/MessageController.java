@@ -1,5 +1,6 @@
 package com.itsharex.blog.controller;
 
+import com.itsharex.blog.annotation.AccessLimit;
 import com.itsharex.blog.annotation.OptLog;
 import com.itsharex.blog.dto.MessageBackDTO;
 import com.itsharex.blog.dto.MessageDTO;
@@ -43,6 +44,7 @@ public class MessageController {
      * @param messageVO 留言信息
      * @return {@link Result <>}
      */
+    @AccessLimit(seconds = 60, maxCount = 1)
     @ApiOperation(value = "添加留言")
     @PostMapping("/messages")
     public Result<?> saveMessage(@Valid @RequestBody MessageVO messageVO) {

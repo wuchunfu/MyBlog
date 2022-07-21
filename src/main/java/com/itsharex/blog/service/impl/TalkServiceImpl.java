@@ -13,6 +13,7 @@ import com.itsharex.blog.exception.BizException;
 import com.itsharex.blog.service.RedisService;
 import com.itsharex.blog.service.TalkService;
 import com.itsharex.blog.util.BeanCopyUtils;
+import com.itsharex.blog.util.CommonUtils;
 import com.itsharex.blog.util.HTMLUtils;
 import com.itsharex.blog.util.PageUtils;
 import com.itsharex.blog.util.UserUtils;
@@ -55,7 +56,7 @@ public class TalkServiceImpl extends ServiceImpl<TalkDao, Talk> implements TalkS
                         .orderByDesc(Talk::getId)
                         .last("limit 10"))
                 .stream()
-                .map(item -> item.getContent().length() > 200 ? HTMLUtils.deleteTag(item.getContent().substring(0, 200)) : HTMLUtils.deleteTag(item.getContent()))
+                .map(item -> item.getContent().length() > 200 ? HTMLUtils.deleteHMTLTag(item.getContent().substring(0, 200)) : HTMLUtils.deleteHMTLTag(item.getContent()))
                 .collect(Collectors.toList());
     }
 
@@ -83,7 +84,7 @@ public class TalkServiceImpl extends ServiceImpl<TalkDao, Talk> implements TalkS
             item.setCommentCount(commentCountMap.get(item.getId()));
             // 转换图片格式
             if (Objects.nonNull(item.getImages())) {
-                item.setImgList(JSON.parseObject(item.getImages(), List.class));
+                item.setImgList(CommonUtils.castList(JSON.parseObject(item.getImages(), List.class), String.class));
             }
         });
         return new PageResult<>(talkDTOList, count);
@@ -100,7 +101,7 @@ public class TalkServiceImpl extends ServiceImpl<TalkDao, Talk> implements TalkS
         talkDTO.setLikeCount((Integer) redisService.hGet(TALK_LIKE_COUNT, talkId.toString()));
         // 转换图片格式
         if (Objects.nonNull(talkDTO.getImages())) {
-            talkDTO.setImgList(JSON.parseObject(talkDTO.getImages(), List.class));
+            talkDTO.setImgList(CommonUtils.castList(JSON.parseObject(talkDTO.getImages(), List.class), String.class));
         }
         return talkDTO;
     }
@@ -147,7 +148,7 @@ public class TalkServiceImpl extends ServiceImpl<TalkDao, Talk> implements TalkS
         talkDTOList.forEach(item -> {
             // 转换图片格式
             if (Objects.nonNull(item.getImages())) {
-                item.setImgList(JSON.parseObject(item.getImages(), List.class));
+                item.setImgList(CommonUtils.castList(JSON.parseObject(item.getImages(), List.class), String.class));
             }
         });
         return new PageResult<>(talkDTOList, count);
@@ -158,7 +159,7 @@ public class TalkServiceImpl extends ServiceImpl<TalkDao, Talk> implements TalkS
         TalkBackDTO talkBackDTO = talkDao.getBackTalkById(talkId);
         // 转换图片格式
         if (Objects.nonNull(talkBackDTO.getImages())) {
-            talkBackDTO.setImgList(JSON.parseObject(talkBackDTO.getImages(), List.class));
+            talkBackDTO.setImgList(CommonUtils.castList(JSON.parseObject(talkBackDTO.getImages(), List.class), String.class));
         }
         return talkBackDTO;
     }

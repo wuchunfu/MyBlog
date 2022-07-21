@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.io.InputStream;
 
 /**
- * oss上传策略
+ * 阿里云 oss 上传策略
  *
  * @author wuchunfu
  * @date 2021-08-21

@@ -1,6 +1,10 @@
 package com.itsharex.blog.util;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,5 +56,40 @@ public class CommonUtils {
         return str.toString();
     }
 
+    /**
+     * 转换List
+     *
+     * @param obj   obj
+     * @param clazz clazz
+     * @return {@link List<T>}
+     */
+    public static <T> List<T> castList(Object obj, Class<T> clazz) {
+        List<T> result = new ArrayList<T>();
+        if (obj instanceof List<?>) {
+            for (Object o : (List<?>) obj) {
+                result.add(clazz.cast(o));
+            }
+            return result;
+        }
+        return result;
+    }
+
+    /**
+     * 转换set
+     *
+     * @param obj   obj
+     * @param clazz clazz
+     * @return {@link Set<T>}
+     */
+    public static <T> Set<T> castSet(Object obj, Class<T> clazz) {
+        Set<T> result = new HashSet<>();
+        if (obj instanceof Set<?>) {
+            for (Object o : (Set<?>) obj) {
+                result.add(clazz.cast(o));
+            }
+            return result;
+        }
+        return result;
+    }
 
 }

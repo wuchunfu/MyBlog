@@ -12,6 +12,7 @@ import com.itsharex.blog.entity.Message;
 import com.itsharex.blog.service.BlogInfoService;
 import com.itsharex.blog.service.MessageService;
 import com.itsharex.blog.util.BeanCopyUtils;
+import com.itsharex.blog.util.HTMLUtils;
 import com.itsharex.blog.util.IpUtils;
 import com.itsharex.blog.util.PageUtils;
 import com.itsharex.blog.vo.ConditionVO;
@@ -52,6 +53,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageDao, Message> impleme
         String ipAddress = IpUtils.getIpAddress(request);
         String ipSource = IpUtils.getIpSource(ipAddress);
         Message message = BeanCopyUtils.copyObject(messageVO, Message.class);
+        message.setMessageContent(HTMLUtils.filter(message.getMessageContent()));
         message.setIpAddress(ipAddress);
         message.setIsReview(isReview == CommonConst.TRUE ? CommonConst.FALSE : CommonConst.TRUE);
         message.setIpSource(ipSource);
